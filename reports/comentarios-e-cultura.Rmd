@@ -10,7 +10,7 @@ theme: sandstone
 library(tidyverse)
 library(here)
 library(viridis)
-source(here::here("code/lib.R"))
+source(here::here("code/import_data.R"))
 theme_set(theme_bw())
 
 knitr::opts_chunk$set(tidy = FALSE,
@@ -44,11 +44,147 @@ Considerando essa variável, queremos examinar a relação entre ela e o quão h
 
 Faça uma visualização que usa os princípios de eficácia no projeto de visualizações para facilitar as comparações que você acha que são as mais importantes para entendermos esse contexto. 
 
+```{r}
+ggplot(data=dados,aes(
+        x = PDI,
+        y = comentaram_prop,
+        color = Internet,
+        size = log10(usuarios)
+    )) +
+    geom_point(alpha = 0.8) +
+    geom_line(stat="smooth",
+              method = "loess",
+              size = 1.5,
+              linetype ="dashed",
+              alpha = 0.5,
+              color="red")
+    
+```
+
+Podemos destacar os seguintes pontos:
+
+1. A proporção das pessoas que comentam possui alguma relação positiva com maiores acesso à Internet e menores índices de hierarquia
+2. A quantidade de usuários analisados, para esta visualização, não apresenta grande influência na relação, tendo valores distribuídos por toda a visualização
+3. A escolha de intensidade da cor facilita a verificação 1. quanto ao acesso à Internet
+4. A linha tracejada facilita a visualização da tendência dos dados concluídas em 1. 
+
+
 ## Outras formas de ver
 
 Em seguida, faça 5 visualizações que usem as mesmas variáveis e também pontos, mas que sejam **menos eficazes** que a que você escolheu acima. 
+
+1 - Sem transparência
+
+```{r}
+ggplot(data=dados,aes(
+        x = PDI,
+        y = comentaram_prop,
+        color = Internet,
+        size = log10(usuarios)
+    )) +
+    geom_point(alpha = 1) +
+    geom_line(stat="smooth",
+              method = "loess",
+              size = 1.5,
+              linetype ="dashed",
+              alpha = 0.5,
+              color="red")
+    
+```
+
+Desta forma perdemos dados e poder de análise pois os pontos se sobrescrevem. 
+
+2 - Sem o canal para tamanho da base de usuários
+
+```{r}
+ggplot(data=dados,aes(
+        x = PDI,
+        y = comentaram_prop,
+        color = Internet
+    )) +
+    geom_point(alpha = 0.8) +
+    geom_line(stat="smooth",
+              method = "loess",
+              size = 1.5,
+              linetype ="dashed",
+              alpha = 0.5,
+              color="red")
+    
+```
+Sem a expressar o tamanho das bases de usuário, teríamos uma visualização mais uniforme, porém perdendo uma informação valiosa que pode nos indicar fatores importante na análiser, até mesmo o enviesamento.
+
+3 - Base de usuários para cores
+
+```{r}
+ggplot(data=dados,aes(
+        x = PDI,
+        y = comentaram_prop,
+        color = log10(usuarios),
+        size = Internet
+    )) +
+    geom_point() +
+    geom_line(stat="smooth",
+              method = "loess",
+              size = 1.5,
+              linetype ="dashed",
+              alpha = 1,
+              color="red")
+    
+```
+
+Como é uma variável com pouco range de valores, as cores ficam similares e repetidas, dificultando a análise.
+
+4 - Dado na marca incorreta
+
+```{r}
+ggplot(data=dados,aes(
+        x = PDI,
+        y = log10(usuarios),
+        color = Internet,
+        size = comentaram_prop
+    )) +
+    geom_point(alpha = 0.8) +
+    geom_line(stat="smooth",
+              method = "loess",
+              size = 1.5,
+              linetype ="dashed",
+              alpha = 0.5,
+              color="red")
+    
+```
+Não dá pra entender nada. Com a proporção no tamanho da marca, vemos que, devido ao pouco range de valores, os tamanhos são bastante similares e próximos no na visualização. 
+
+5 - Dados não adequados ao canal
+
+```{r}
+ggplot(data=dados,aes(
+        x = log10(usuarios),
+        y = comentaram_prop,
+        color = Internet,
+        size = PDI
+    )) +
+    geom_point(alpha = 0.6) +
+    geom_line(stat="smooth",
+              method = "loess",
+              size = 1.5,
+              linetype ="dashed",
+              alpha = 0.5,
+              color="red")
+    
+```
+Não é fácil compreender a relação entre PDI e proporção dos que comentaram pois, da forma que está selecionados, o tamanho se torna um ruído devido a quantidade de pontos.
 
 ## Bônus
 
 Inclua o continente dos países (`six_regions`) na visualização.
 
+```{r}
+ggplot(data=dados,aes(
+        x = PDI,
+        y = comentaram_prop,
+        color = Internet,
+        size = log10(usuarios),
+        shape = six_regions
+    )) +
+    geom_point(alpha = 0.6) 
+```
